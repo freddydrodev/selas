@@ -1,0 +1,12 @@
+export const bgColor = "#FFFFFF";
+export const bgLight = "#F4F4F4";
+export const textLight = "#BDBDBD";
+export const textColor = "#6B6B6B";
+export const textDark = "#282828";
+export const textDarker = "#161616";
+export const primaryColor = "#4F6EEE";
+export const bgTag = "#F2F6FF";
+export const borderTag = "#BACFFF";
+export const linkActive = primaryColor;
+export const STAR_COLOR = "#F5D157";
+export const DANGER_COLOR = "#FF4F6F";
