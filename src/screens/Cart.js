@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet } from "react-native";
-import { Container } from "native-base";
+import { Container, Text } from "native-base";
 import MainHeader from "../components/commons/MainHeader";
 
 class Cart extends Component {
@@ -12,6 +12,7 @@ class Cart extends Component {
     return (
       <Container>
         <MainHeader title="My Cart" />
+        <Text>Working on...</Text>
       </Container>
     );
   }

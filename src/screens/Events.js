@@ -4,12 +4,11 @@ import { Container, Content, Tab, Tabs, ScrollableTab } from "native-base";
 import MainHeader from "../components/commons/MainHeader";
 import { primaryColor, bgLight, textColor } from "../tools";
 import EventCard from "../components/commons/EventCard";
-import LoadingScreen from "../components/LoadingScreen";
 import { db } from "../config/base";
 
 class Events extends Component {
   state = {
-    categories: ["Food", "Festival", "Music", "Party", "Religion", "Art"],
+    categories: [],
     data: [],
     isReady: false
   };
@@ -61,27 +60,38 @@ class Events extends Component {
         }}
       >
         {this.state.data.map(e => (
-          <EventCard key={e.id} data={e} />
+          <EventCard key={e.key} data={{ ...e, id: e.key }} />
         ))}
       </Tab>
     ));
   };
 
   async componentDidMount() {
-    // await db
-    //   .collection("events")
-    //   .orderBy("createdAt", "desc")
-    //   .get()
-    //   .then(docs => {
-    //     const data = [];
-    //     docs.forEach(doc => {
-    //       data.push({ id: doc.id, ...doc.data() });
-    //     });
-    //     this.setState({ isReady: true, data }, () => {
-    //       console.log("done");
-    //     });
-    //   })
-    //   .catch(() => {});
+    await db.bindToState("events", {
+      context: this,
+      state: "data",
+      asArray: true,
+      keepKeys: true,
+      queries: {
+        orderByKey: "child_added"
+      },
+      then: () => {
+        db.bindToState("categories", {
+          context: this,
+          state: "categories",
+          asArray: true,
+          then: () => {
+            this.setState({ isReady: true });
+          },
+          onFailure: err => {
+            console.log(err);
+          }
+        });
+      },
+      onFailure: err => {
+        console.log(err);
+      }
+    });
   }
 }
 

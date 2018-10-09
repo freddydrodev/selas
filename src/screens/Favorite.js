@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet } from "react-native";
-import { Container } from "native-base";
+import { Container, Text } from "native-base";
 import MainHeader from "../components/commons/MainHeader";
 
 class Favorite extends Component {
@@ -12,6 +12,7 @@ class Favorite extends Component {
     return (
       <Container>
         <MainHeader title="My Favorites" />
+        <Text>Working on...</Text>
       </Container>
     );
   }
