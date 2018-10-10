@@ -11,8 +11,6 @@ export default class App extends Component {
     await Font.loadAsync({ ...fonts }).then(() => {
       this.setState({ isReady: true });
     });
-
-    // this.setState({ isReady: true });
   }
 
   render() {

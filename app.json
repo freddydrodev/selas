@@ -1,11 +1,16 @@
 {
   "expo": {
     "name": "selas",
-    "description": "This project is really great.",
+    "description": "demo of your project you can add events the form validation is not done for now so fill all the fields if you see a warning just click on it then click dismiss",
+    "android": {
+      "package": "com.river.selas"
+    },
     "slug": "selas",
     "privacy": "public",
     "sdkVersion": "30.0.0",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "android"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
