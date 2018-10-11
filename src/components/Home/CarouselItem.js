@@ -53,7 +53,7 @@ const CarouselItem = ({
           <View>
             <CardDetail name="folder" title={`in ${category}`} />
             <CardDetail name="map-pin" title={location} />
-            <CardDetail name="calendar" title={`${date} / ${hour}`} />
+            <CardDetail name="calendar" title={date} />
           </View>
           <View style={{ alignItems: "flex-end" }}>
             <PriceSection basePrice={basePrice} />

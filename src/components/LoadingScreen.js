@@ -12,7 +12,6 @@ export default class LoadingScreen extends Component {
     return (
       <View style={{ ...rnFill, ...rnSetPosition(), backgroundColor: "white" }}>
         <Text>Loading...</Text>
-        {/* <Spinner size={40} color={primaryColor} /> */}
       </View>
     );
   }

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, ProgressBarAndroid } from "react-native";
+import { Permissions } from "expo";
 import moment from "moment";
 import {
   Container,
@@ -48,6 +49,7 @@ class AddEvent extends Component {
   };
 
   async componentDidMount() {
+    const callCam = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     await db.bindToState("categories", {
       context: this,
       state: "categories",
@@ -89,7 +91,9 @@ class AddEvent extends Component {
         >
           <Form>
             {animating ? (
-              <ProgressBarAndroid color={primaryColor} />
+              <Text style={{ padding: 10, textAlign: "center" }}>
+                Uploading...
+              </Text>
             ) : (
               this.generateForm()
             )}
@@ -135,17 +139,22 @@ class AddEvent extends Component {
         this._uploadImg(cover.uri, name)
           .then(p => {
             p.ref.getDownloadURL().then(uri => {
+              const newField = {
+                ...data,
+                date: moment(data.date).format("DD-MM-YYYY"),
+                createdAt: moment(new Date()).format("DD-MM-YYYY"),
+                img: { ...restCover, uri }
+              };
               db.push("events", {
                 data: {
-                  ...data,
-                  createdAt: moment(new Date()).format("DD-MM-YYYY"),
-                  img: { ...restCover, uri }
+                  ...newField
                 },
                 then: err => {
                   console.log(err);
                   this.setState({ animating: false });
                 }
               });
+              console.log(...newField);
             });
           })
           .catch(err => {

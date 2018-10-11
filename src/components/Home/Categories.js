@@ -1,5 +1,6 @@
 import React from "react";
 import { TouchableOpacity } from "react-native";
+import { withNavigation } from "react-navigation";
 import { View, Text } from "native-base";
 import HomeSection from "./HomeSection";
 import {
@@ -11,7 +12,7 @@ import {
   bgTag
 } from "../../tools";
 
-const PopularEvents = ({ categories }) => {
+const PopularEvents = ({ categories, navigation }) => {
   return (
     <HomeSection
       title="Categories"
@@ -26,11 +27,13 @@ const PopularEvents = ({ categories }) => {
           flexWrap: "wrap"
         }}
       >
-        {categories.map(cat => {
+        {categories.map((category, i) => {
           return (
             <TouchableOpacity
-              onPress={() => alert(cat)}
-              key={cat}
+              onPress={() =>
+                navigation.navigate("events", { selectedPage: i + 1 })
+              }
+              key={category}
               style={{
                 ...rnSetPadding(15, "horizontal"),
                 ...rnSetPadding(5, "vertical"),
@@ -45,7 +48,7 @@ const PopularEvents = ({ categories }) => {
               <Text
                 style={{ fontFamily: "ws", fontSize: 12, color: primaryColor }}
               >
-                {cat.toLocaleUpperCase()}
+                {category.toLocaleUpperCase()}
               </Text>
             </TouchableOpacity>
           );
@@ -55,4 +58,4 @@ const PopularEvents = ({ categories }) => {
   );
 };
 
-export default PopularEvents;
+export default withNavigation(PopularEvents);

@@ -10,14 +10,16 @@ import {
   Label,
   Textarea,
   Picker,
-  View
+  View,
+  DatePicker
 } from "native-base";
 import {
   textDark,
   textColor,
   rnSetPadding,
   BASE_SPACE,
-  bgLight
+  bgLight,
+  textLight
 } from "../../tools";
 
 class FormField extends Component {
@@ -25,6 +27,7 @@ class FormField extends Component {
     imageSelected: false
   };
   render() {
+    // const DatePicker = ;
     const {
       name,
       label,
@@ -32,6 +35,7 @@ class FormField extends Component {
       picker,
       image,
       data,
+      date,
       placeholder,
       container,
       children,
@@ -100,7 +104,6 @@ class FormField extends Component {
                 mode="dialog"
                 placeholder="Select your a category"
                 textStyle={inputStyle}
-                itemStyle={{ backgroundColor: "red" }}
                 selectedValue={value}
                 onValueChange={(...rest) => change(name, rest)}
               >
@@ -115,6 +118,30 @@ class FormField extends Component {
         );
     }
 
+    console.log(value);
+    //case date
+    if (date) {
+      Inp = (
+        <React.Fragment>
+          {label && <Label style={labelStyle}>{label}</Label>}
+          <DatePicker
+            value={!!value ? value : new Date()}
+            defaultDate={!!value ? value : new Date()}
+            minimumDate={new Date()}
+            locale={"en"}
+            modalTransparent={false}
+            animationType={"fade"}
+            androidMode={"default"}
+            placeHolderText="Select date"
+            textStyle={{ color: textColor, fontFamily: "ws" }}
+            placeHolderTextStyle={{ color: textLight }}
+            onDateChange={(...rest) => change(name, rest)}
+          />
+        </React.Fragment>
+      );
+    }
+
+    //case images
     if (image) {
       Inp = (
         <React.Fragment>
@@ -133,6 +160,7 @@ class FormField extends Component {
       );
     }
 
+    //case container
     if (container) {
       Inp = (
         <React.Fragment>

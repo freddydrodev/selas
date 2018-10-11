@@ -28,6 +28,10 @@ const addEventFormStructure = (
       label: "Event Category",
       data: categories
     },
+    date: {
+      type: "date",
+      label: "Event Date & hour"
+    },
     price: {
       type: "container",
       label: "Event Prices",

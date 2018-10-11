@@ -10,11 +10,13 @@ class Events extends Component {
   state = {
     categories: [],
     data: [],
-    isReady: false
+    isReady: false,
+    selectedPage: 0
   };
 
   render() {
     const {} = style;
+    console.log(`[ID] ${this.state.selectedPage}`);
 
     return (
       this.state.isReady && (
@@ -22,6 +24,9 @@ class Events extends Component {
           <MainHeader title="Events" hasTabs />
           <Content>
             <Tabs
+              initialPage={this.state.selectedPage}
+              onChangeTab={e => console.log(e)}
+              page={this.state.selectedPage}
               renderTabBar={() => <ScrollableTab />}
               tabBarUnderlineStyle={{
                 backgroundColor: primaryColor,
@@ -81,7 +86,13 @@ class Events extends Component {
           state: "categories",
           asArray: true,
           then: () => {
-            this.setState({ isReady: true });
+            const selectedPage = this.props.navigation.getParam(
+              "selectedPage",
+              0
+            );
+            this.setState({ isReady: true }, () => {
+              this.setState({ selectedPage });
+            });
           },
           onFailure: err => {
             console.log(err);
