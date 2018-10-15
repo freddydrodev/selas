@@ -75,7 +75,9 @@ class EventCard extends Component {
     } = this.props.data;
     return this.state.loaded ? (
       <TouchableOpacity
-        onPress={() => this.props.navigation.navigate("eventDetail", { key })}
+        onPress={() =>
+          this.props.navigation.navigate("eventDetail", { id: key })
+        }
         style={{
           flexDirection: "row",
           marginBottom: BASE_SPACE,

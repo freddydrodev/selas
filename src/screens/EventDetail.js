@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Image } from "react-native";
 import { Container, Content, Text, Footer, Button } from "native-base";
 
 class EventDetail extends Component {
@@ -11,7 +11,7 @@ class EventDetail extends Component {
     return (
       <Container>
         <Content>
-          <Text> EventDetail </Text>
+          <Image />
         </Content>
       </Container>
     );
