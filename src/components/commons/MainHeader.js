@@ -76,7 +76,7 @@ const MainHeader = ({ title, navigation, ...rest }) => {
         />
       </Left>
       <Body>
-        <Title style={{ color: textDark, fontFamily: "ws" }}>
+        <Title style={{ color: textDark, fontFamily: "font" }}>
           {title || "Ticketing App"}
         </Title>
       </Body>

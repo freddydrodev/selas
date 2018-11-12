@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { StyleSheet, ProgressBarAndroid } from "react-native";
+import { StyleSheet } from "react-native";
 import { Permissions } from "expo";
 import moment from "moment";
+import { connect } from "react-redux";
 import {
   Container,
   Content,
@@ -9,8 +10,7 @@ import {
   Footer,
   Button,
   FooterTab,
-  Form,
-  ProgressBar
+  Form
 } from "native-base";
 import { Grid } from "react-native-easy-grid";
 import {
@@ -24,7 +24,7 @@ import {
   primaryColor
 } from "../tools";
 import FormField from "../components/commons/FormField";
-import { storage, db } from "../config/base";
+import { STORAGE, DB } from "../config/base";
 import LoadingScreen from "../components/LoadingScreen";
 import addEventFormStructure from "../config/addEventFormStructure";
 
@@ -33,7 +33,7 @@ class AddEvent extends Component {
     headerStyle: { elevation: 0 },
     headerTitle: "Create Event",
     headerTitleStyle: {
-      fontFamily: "ws",
+      fontFamily: "font",
       fontWeight: "normal",
       color: textDark
     }
@@ -41,44 +41,31 @@ class AddEvent extends Component {
 
   state = {
     animating: false,
-    isReady: false,
+    isReady: true,
     formData: {},
     categories: [],
-    ticketTypes: [],
+    ticketTypes: ["1", "2"],
     formStructure: {}
   };
 
   async componentDidMount() {
     const callCam = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    await db.bindToState("categories", {
-      context: this,
-      state: "categories",
-      asArray: true,
-      then: data => {
-        db.bindToState("ticketTypes", {
-          context: this,
-          state: "ticketTypes",
-          asArray: true,
-          then: data => {
-            const { categories, ticketTypes } = this.state;
-            const formStructure = addEventFormStructure(
-              categories,
-              ticketTypes
-            );
-            this.setState({ isReady: true, formStructure }, () => {
-              Object.keys(this.state.formStructure).map(key => {
-                const formData = this.state.formData;
-                formData[key] = null;
-                this.setState(formData);
-              });
-            });
-          },
-          onFailure: err => {
-            console.log(err);
-          }
+    if (callCam === "granted") {
+      const { categories } = this.props;
+
+      const formStructure = addEventFormStructure(
+        categories,
+        this.state.ticketTypes
+      );
+
+      this.setState({ formStructure }, () => {
+        Object.keys(this.state.formStructure).map(key => {
+          const formData = this.state.formData;
+          formData[key] = null;
+          this.setState(formData);
         });
-      }
-    });
+      });
+    }
   }
 
   render() {
@@ -107,7 +94,7 @@ class AddEvent extends Component {
               style={{ backgroundColor: primaryColor }}
               onPress={this.onFormSubmit}
             >
-              <Text style={{ fontFamily: "ws", color: bgColor }}>Create</Text>
+              <Text style={{ fontFamily: "font", color: bgColor }}>Create</Text>
             </Button>
           </FooterTab>
         </Footer>
@@ -121,14 +108,12 @@ class AddEvent extends Component {
     const response = await fetch(uri);
     const blob = await response.blob();
 
-    return await storage
-      .ref()
+    return await STORAGE.ref()
       .child(`images/covers/${name}`)
       .put(blob);
   };
 
   onFormSubmit = () => {
-    console.log("ici");
     this.setState({ animating: true }, () => {
       const formData = this.state.formData;
       const name = "cover_" + new Date().valueOf();
@@ -145,7 +130,7 @@ class AddEvent extends Component {
                 createdAt: moment(new Date()).format("DD-MM-YYYY"),
                 img: { ...restCover, uri }
               };
-              db.push("events", {
+              DB.push("events", {
                 data: {
                   ...newField
                 },
@@ -203,16 +188,20 @@ class AddEvent extends Component {
   };
 }
 
-export default AddEvent;
+const mstp = ({ categories }) => ({
+  categories
+});
+
+export default connect(mstp)(AddEvent);
 
 const styles = StyleSheet.create({
   inputStyle: {
-    fontFamily: "ws",
+    fontFamily: "font",
     color: textColor,
     fontSize: 14
   },
   textAreaStyle: {
-    fontFamily: "ws",
+    fontFamily: "font",
     color: textColor,
     backgroundColor: bgLight,
     borderWidth: null,
@@ -220,7 +209,7 @@ const styles = StyleSheet.create({
     fontSize: 14
   },
   labelStyle: {
-    fontFamily: "ws",
+    fontFamily: "font",
     color: textDark,
     fontSize: 15,
     ...rnSetPadding(5, "vertical")
@@ -237,7 +226,7 @@ const styles = StyleSheet.create({
       <FormField
         placeholder="Ticket Type"
         picker
-        data={db.ticketType}
+        data={DB.ticketType}
       />
     </Col>
     <Col>

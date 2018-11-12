@@ -1,5 +1,6 @@
 import React from "react";
-import { StyleSheet, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import { Image } from "react-native-expo-image-cache";
 import { View, Text, H3 } from "native-base";
 import {
   rnFill,
@@ -33,6 +34,7 @@ const CarouselItem = ({
   img
 }) => {
   const { imageStyle, detailStyle, boxSeparatorStyle, titleStyle } = styles;
+
   return (
     <TouchableOpacity
       onPress={() => alert(`Clicked Event ID: ${id}`)}
@@ -40,8 +42,10 @@ const CarouselItem = ({
     >
       <View style={imageStyle}>
         <Image
-          source={{ uri: img.uri }}
-          style={{ ...rnFill, resizeMode: "cover" }}
+          uri={img.uri}
+          preview={{ uri: img.cached }}
+          resizeMode="cover"
+          style={{ ...rnFill }}
         />
       </View>
       <View style={detailStyle}>
@@ -68,8 +72,8 @@ export default CarouselItem;
 
 // const star
 const styles = StyleSheet.create({
-  fromStyle: { fontFamily: "ws_light", color: textLight, fontSize: 12 },
-  priceStyle: { fontFamily: "ws_sBold", color: linkActive, fontSize: 24 },
+  fromStyle: { fontFamily: "font_light", color: textLight, fontSize: 12 },
+  priceStyle: { fontFamily: "font_sBold", color: linkActive, fontSize: 24 },
   imageStyle: {
     ...rnFill,
     height: 150,
@@ -90,7 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between"
   },
   titleStyle: {
-    fontFamily: "ws_light",
+    fontFamily: "font_light",
     color: textDark,
     marginBottom: TITLE_SPACE
   }

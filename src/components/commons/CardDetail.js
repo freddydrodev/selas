@@ -13,8 +13,8 @@ const CardDetail = ({ type, name, title }) => (
 export default CardDetail;
 
 const styles = StyleSheet.create({
-  fromStyle: { fontFamily: "ws_light", color: textLight, fontSize: 12 },
-  priceStyle: { fontFamily: "ws_sBold", color: linkActive, fontSize: 24 },
+  fromStyle: { fontFamily: "font_light", color: textLight, fontSize: 12 },
+  priceStyle: { fontFamily: "font_sBold", color: linkActive, fontSize: 24 },
   detailIconStyle: { color: textDark, marginRight: 5, fontSize: 12 },
-  detailTitleStyle: { fontFamily: "ws", color: textColor, fontSize: 12 }
+  detailTitleStyle: { fontFamily: "font", color: textColor, fontSize: 12 }
 });

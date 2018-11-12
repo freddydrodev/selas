@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Image, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
+import { Image } from "react-native-expo-image-cache";
 import { View, H3 } from "native-base";
 import { withNavigation } from "react-navigation";
 import {
@@ -53,6 +54,7 @@ const Ghost = () => {
     </View>
   );
 };
+
 class EventCard extends Component {
   state = {
     loaded: false
@@ -97,14 +99,15 @@ class EventCard extends Component {
           }}
         >
           <Image
-            source={{ uri: img.uri }}
-            style={{ ...rnFill, resizeMode: "cover", borderRadius: 5 }}
+            uri={img.uri}
+            resizeMode="cover"
+            style={{ ...rnFill, borderRadius: 5 }}
           />
         </View>
         <View style={{ marginTop: BASE_SPACE }}>
           <H3
             style={{
-              fontFamily: "ws_light",
+              fontFamily: "font_light",
               color: textDark,
               marginBottom: TITLE_SPACE
             }}

@@ -12,7 +12,7 @@ const app = firebase.initializeApp({
 
 const database = app.database();
 
-const db = Rebase.createClass(database);
+const DB = Rebase.createClass(database);
 //Storage
-const storage = app.storage();
-export { storage, db };
+const STORAGE = app.storage();
+export { STORAGE, DB };

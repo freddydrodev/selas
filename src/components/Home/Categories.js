@@ -46,7 +46,11 @@ const PopularEvents = ({ categories, navigation }) => {
               }}
             >
               <Text
-                style={{ fontFamily: "ws", fontSize: 12, color: primaryColor }}
+                style={{
+                  fontFamily: "font",
+                  fontSize: 12,
+                  color: primaryColor
+                }}
               >
                 {category.toLocaleUpperCase()}
               </Text>

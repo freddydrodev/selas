@@ -133,7 +133,7 @@ class FormField extends Component {
             animationType={"fade"}
             androidMode={"default"}
             placeHolderText="Select date"
-            textStyle={{ color: textColor, fontFamily: "ws" }}
+            textStyle={{ color: textColor, fontFamily: "font" }}
             placeHolderTextStyle={{ color: textLight }}
             onDateChange={(...rest) => change(name, rest)}
           />
@@ -182,12 +182,12 @@ export default FormField;
 
 const styles = StyleSheet.create({
   inputStyle: {
-    fontFamily: "ws",
+    fontFamily: "font",
     color: textColor,
     fontSize: 14
   },
   textAreaStyle: {
-    fontFamily: "ws",
+    fontFamily: "font",
     color: textColor,
     backgroundColor: bgLight,
     borderWidth: null,
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     fontSize: 14
   },
   labelStyle: {
-    fontFamily: "ws",
+    fontFamily: "font",
     color: textDark,
     fontSize: 15,
     ...rnSetPadding(5, "vertical")
