@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
+import { withNavigation } from "react-navigation";
 import { Image } from "react-native-expo-image-cache";
 import { View, Text, H3 } from "native-base";
 import {
@@ -17,7 +18,7 @@ import StarList from "../commons/StarList";
 
 const PriceSection = ({ basePrice }) => (
   <React.Fragment>
-    <Text style={styles.fromStyle}>From</Text>
+    <Text style={styles.fromStyle}>Price</Text>
     <Text style={styles.priceStyle}>{basePrice}$</Text>
   </React.Fragment>
 );
@@ -26,18 +27,18 @@ const CarouselItem = ({
   id,
   name,
   location,
+  price,
   date,
-  hour,
-  basePrice,
   rank,
   category,
-  img
+  img,
+  navigation
 }) => {
   const { imageStyle, detailStyle, boxSeparatorStyle, titleStyle } = styles;
 
   return (
     <TouchableOpacity
-      onPress={() => alert(`Clicked Event ID: ${id}`)}
+      onPress={() => navigation.navigate("eventDetail", { id })}
       style={{ ...rnSetPadding(BASE_SPACE, "horizontal") }}
     >
       <View style={imageStyle}>
@@ -60,7 +61,7 @@ const CarouselItem = ({
             <CardDetail name="calendar" title={date} />
           </View>
           <View style={{ alignItems: "flex-end" }}>
-            <PriceSection basePrice={basePrice} />
+            <PriceSection basePrice={price} />
           </View>
         </View>
       </View>
@@ -68,7 +69,7 @@ const CarouselItem = ({
   );
 };
 
-export default CarouselItem;
+export default withNavigation(CarouselItem);
 
 // const star
 const styles = StyleSheet.create({

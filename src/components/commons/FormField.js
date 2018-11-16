@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { StyleSheet } from "react-native";
 import { ImagePicker } from "expo";
 import { Feather } from "@expo/vector-icons";
+import PropTypes from "prop-types";
 import {
   Text,
   Button,
@@ -27,20 +28,15 @@ class FormField extends Component {
     imageSelected: false
   };
   render() {
-    // const DatePicker = ;
     const {
-      name,
+      _key,
       label,
-      textarea,
-      picker,
-      image,
       data,
-      date,
       placeholder,
-      container,
       children,
       change,
       value,
+      type,
       ...args
     } = this.props;
     const { imageSelected } = this.state;
@@ -54,48 +50,30 @@ class FormField extends Component {
 
       if (!result.cancelled) {
         this.setState({ imageSelected: true });
-        this.props.change(this.props.name, [result]);
-      } else {
-        this.setState({ imageSelected: false });
-        this.props.change(this.props.name, [null]);
+        this.props.change(this.props._key, result);
       }
     };
 
     const { inputStyle, labelStyle, textAreaStyle, imageSytle } = styles;
-    let Inp = (
-      <Item stackedLabel={!!label} style={{ marginLeft: null }}>
-        {label && <Label style={labelStyle}>{label}</Label>}
-        <Input
-          style={inputStyle}
-          autoCapitalize="words"
-          placeholder={placeholder}
-          keyboardAppearance="light"
-          value={value}
-          onChangeText={(...rest) => change(name, rest)}
-        />
-      </Item>
-    );
+    let Inp = null;
 
-    //case textArea
-    if (textarea) {
-      Inp = (
-        <React.Fragment>
-          {label && <Label style={labelStyle}>{label}</Label>}
-          <Textarea
-            style={textAreaStyle}
-            rowSpan={5}
-            keyboardAppearance="light"
-            value={value}
-            onChangeText={(...rest) => change(name, rest)}
-          />
-        </React.Fragment>
-      );
-    }
-
-    //case picker
-    if (picker) {
-      Inp =
-        data || data.length <= 0 ? (
+    switch (type) {
+      case "textarea":
+        Inp = (
+          <React.Fragment>
+            {label && <Label style={labelStyle}>{label}</Label>}
+            <Textarea
+              style={textAreaStyle}
+              rowSpan={5}
+              keyboardAppearance="light"
+              value={value}
+              onChangeText={value => change(_key, value)}
+            />
+          </React.Fragment>
+        );
+        break;
+      case "picker":
+        Inp = data ? (
           <React.Fragment>
             {label && <Label style={labelStyle}>{label}</Label>}
             <Item picker>
@@ -105,7 +83,7 @@ class FormField extends Component {
                 placeholder="Select your a category"
                 textStyle={inputStyle}
                 selectedValue={value}
-                onValueChange={(...rest) => change(name, rest)}
+                onValueChange={value => change(_key, value)}
               >
                 {data.map(e => (
                   <Picker.Item label={e} value={e} key={e} />
@@ -116,62 +94,73 @@ class FormField extends Component {
         ) : (
           <Text>data is required</Text>
         );
-    }
-
-    console.log(value);
-    //case date
-    if (date) {
-      Inp = (
-        <React.Fragment>
-          {label && <Label style={labelStyle}>{label}</Label>}
-          <DatePicker
-            value={!!value ? value : new Date()}
-            defaultDate={!!value ? value : new Date()}
-            minimumDate={new Date()}
-            locale={"en"}
-            modalTransparent={false}
-            animationType={"fade"}
-            androidMode={"default"}
-            placeHolderText="Select date"
-            textStyle={{ color: textColor, fontFamily: "font" }}
-            placeHolderTextStyle={{ color: textLight }}
-            onDateChange={(...rest) => change(name, rest)}
-          />
-        </React.Fragment>
-      );
-    }
-
-    //case images
-    if (image) {
-      Inp = (
-        <React.Fragment>
-          {label && <Label style={labelStyle}>{label}</Label>}
-          <Button full light style={imageSytle} onPress={_imgPicker}>
-            <Feather
-              name={imageSelected ? "check" : "download"}
-              color={textColor}
-              size={14}
+        break;
+      case "date":
+        Inp = (
+          <React.Fragment>
+            {label && <Label style={labelStyle}>{label}</Label>}
+            <DatePicker
+              value={!!value ? value : new Date()}
+              defaultDate={!!value ? value : new Date()}
+              minimumDate={new Date()}
+              locale={"en"}
+              modalTransparent={false}
+              animationType={"fade"}
+              androidMode={"default"}
+              placeHolderText="Select date"
+              textStyle={{ color: textColor, fontFamily: "font" }}
+              placeHolderTextStyle={{ color: textLight }}
+              onDateChange={value => change(_key, value)}
             />
-            <Text style={inputStyle}>
-              {imageSelected ? "Image Selected" : "Select an Image..."}
-            </Text>
-          </Button>
-        </React.Fragment>
-      );
+          </React.Fragment>
+        );
+        break;
+      case "image":
+        Inp = (
+          <React.Fragment>
+            {label && <Label style={labelStyle}>{label}</Label>}
+            <Button full light style={imageSytle} onPress={_imgPicker}>
+              <Feather
+                _key={imageSelected ? "check" : "download"}
+                color={textColor}
+                size={14}
+              />
+              <Text style={inputStyle}>
+                {imageSelected ? "Image Selected" : "Select an Image..."}
+              </Text>
+            </Button>
+          </React.Fragment>
+        );
+        break;
+      default:
+        Inp = (
+          <Item stackedLabel={!!label} style={{ marginLeft: null }}>
+            {label && <Label style={labelStyle}>{label}</Label>}
+            <Input
+              style={inputStyle}
+              autoCapitalize="words"
+              placeholder={placeholder}
+              keyboardAppearance="light"
+              value={value}
+              onChangeText={value => change(_key, value)}
+            />
+          </Item>
+        );
+        break;
     }
 
     //case container
-    if (container) {
-      Inp = (
-        <React.Fragment>
-          {label && <Label style={labelStyle}>{label}</Label>}
-          {children}
-        </React.Fragment>
-      );
-    }
+    // if (container) {
+    //   Inp = (
+    //     <React.Fragment>
+    //       {label && <Label style={labelStyle}>{label}</Label>}
+    //       {children}
+    //     </React.Fragment>
+    //   );
+    // }
 
     return (
-      <View ref={`${name}`} style={{ marginBottom: BASE_SPACE }}>
+      <View ref={`${_key}`} style={{ marginBottom: BASE_SPACE }}>
         {Inp}
       </View>
     );
@@ -204,3 +193,12 @@ const styles = StyleSheet.create({
     elevation: null
   }
 });
+
+FormField.propTypes = {
+  type: PropTypes.string,
+  _key: PropTypes.string.isRequired,
+  label: PropTypes.string,
+  data: PropTypes.array,
+  placeholder: PropTypes.string,
+  change: PropTypes.func.isRequired
+};

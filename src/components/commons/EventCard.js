@@ -70,7 +70,7 @@ class EventCard extends Component {
       name,
       location,
       date,
-      hour,
+      price,
       rank,
       category,
       img
@@ -117,6 +117,7 @@ class EventCard extends Component {
           <CardDetail name="folder" title={`in ${category}`} />
           <CardDetail name="map-pin" title={location} />
           <CardDetail name="calendar" title={date} />
+          <CardDetail name="money" type="FontAwesome" title={price} />
           <StarList rank={rank} />
         </View>
       </TouchableOpacity>

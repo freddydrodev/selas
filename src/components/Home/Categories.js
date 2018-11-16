@@ -29,11 +29,8 @@ const PopularEvents = ({ categories, navigation }) => {
       >
         {categories.map((category, i) => {
           return (
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("events", { selectedPage: i + 1 })
-              }
-              key={category}
+            <View
+              key={i}
               style={{
                 ...rnSetPadding(15, "horizontal"),
                 ...rnSetPadding(5, "vertical"),
@@ -54,7 +51,7 @@ const PopularEvents = ({ categories, navigation }) => {
               >
                 {category.toLocaleUpperCase()}
               </Text>
-            </TouchableOpacity>
+            </View>
           );
         })}
       </View>

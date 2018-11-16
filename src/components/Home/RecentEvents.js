@@ -1,13 +1,5 @@
 import React from "react";
 import HomeSection from "./HomeSection";
-import {
-  rnSetPadding,
-  rnSetMargin,
-  BASE_SPACE,
-  borderTag,
-  primaryColor,
-  bgTag
-} from "../../tools";
 import EventCard from "../commons/EventCard";
 
 const RecentEvents = ({ data }) => {
@@ -16,9 +8,11 @@ const RecentEvents = ({ data }) => {
       title="Recently Added"
       subtitle="Discover the newest event, Be the first to get you access."
     >
-      {data.map(e => (
-        <EventCard key={e.key} data={e} />
-      ))}
+      {[...data]
+        .filter((e, i) => i < 10)
+        .map(e => (
+          <EventCard key={e.key} data={e} />
+        ))}
     </HomeSection>
   );
 };

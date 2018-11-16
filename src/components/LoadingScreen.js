@@ -11,7 +11,7 @@ export default class LoadingScreen extends Component {
   render() {
     return (
       <View style={{ ...rnFill, ...rnSetPosition(), backgroundColor: "white" }}>
-        <Text>Loading...</Text>
+        <Text>{this.props.text || "Loading..."}</Text>
       </View>
     );
   }

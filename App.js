@@ -7,7 +7,7 @@ import { CacheManager } from "react-native-expo-image-cache";
 import { createStore } from "redux";
 import MainApp from "./src/";
 import reducers from "./src/reducers";
-import { View } from "native-base";
+import { View, Root } from "native-base";
 import { rnFill } from "./src/tools";
 import { DB } from "./src/config/base";
 import { updateEvents, updateCategories } from "./src/actions";
@@ -80,7 +80,7 @@ class RootApp extends Component {
 
           _events.push(e);
           if (i + 1 === len) {
-            this.props.updateEvents(_events);
+            this.props.updateEvents(_events.reverse());
           }
         });
       },
@@ -120,9 +120,11 @@ const AppConnect = connect(
 export default class App extends Component {
   render() {
     return (
-      <Provider store={createStore(reducers)}>
-        <AppConnect />
-      </Provider>
+      <Root>
+        <Provider store={createStore(reducers)}>
+          <AppConnect />
+        </Provider>
+      </Root>
     );
   }
 }

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { StyleSheet } from "react-native";
-import { Permissions } from "expo";
 import moment from "moment";
 import { connect } from "react-redux";
 import {
@@ -10,9 +9,8 @@ import {
   Footer,
   Button,
   FooterTab,
-  Form
+  Toast
 } from "native-base";
-import { Grid } from "react-native-easy-grid";
 import {
   textDark,
   bgColor,
@@ -20,13 +18,11 @@ import {
   rnSetPadding,
   BASE_SPACE,
   bgLight,
-  rnFill,
   primaryColor
 } from "../tools";
-import FormField from "../components/commons/FormField";
 import { STORAGE, DB } from "../config/base";
 import LoadingScreen from "../components/LoadingScreen";
-import addEventFormStructure from "../config/addEventFormStructure";
+import FormGenerator from "../components/commons/FormGenerator";
 
 class AddEvent extends Component {
   static navigationOptions = {
@@ -40,64 +36,67 @@ class AddEvent extends Component {
   };
 
   state = {
-    animating: false,
+    uploading: false,
     isReady: true,
     formData: {},
-    categories: [],
-    ticketTypes: ["1", "2"],
-    formStructure: {}
+    categories: this.props.categories,
+    formStructure: {
+      cover: { type: "image", label: "Event Cover" },
+      name: { label: "Event Name", placeholder: "My awesome event" },
+      location: { label: "Event Location", placeholder: "My event location" },
+      description: { type: "textarea", label: "Event Description" },
+      category: {
+        type: "picker",
+        label: "Event Category",
+        data: this.props.categories
+      },
+      date: { type: "date", label: "Event Date & hour" },
+      price: {
+        label: "Event Price",
+        placeholder: "Any price"
+      }
+    }
   };
 
-  async componentDidMount() {
-    const callCam = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    if (callCam === "granted") {
-      const { categories } = this.props;
-
-      const formStructure = addEventFormStructure(
-        categories,
-        this.state.ticketTypes
-      );
-
-      this.setState({ formStructure }, () => {
-        Object.keys(this.state.formStructure).map(key => {
-          const formData = this.state.formData;
-          formData[key] = null;
-          this.setState(formData);
-        });
-      });
-    }
-  }
+  check = () => {
+    console.log(this.form.state);
+  };
 
   render() {
     const {} = styles;
-    const { animating, isReady } = this.state;
+    const { isReady, uploading } = this.state;
     return isReady ? (
       <Container>
-        <Content
-          contentContainerStyle={{ ...rnSetPadding(BASE_SPACE, "horizontal") }}
-        >
-          <Form>
-            {animating ? (
-              <Text style={{ padding: 10, textAlign: "center" }}>
-                Uploading...
-              </Text>
-            ) : (
-              this.generateForm()
-            )}
-          </Form>
-        </Content>
-        <Footer>
-          <FooterTab>
-            <Button
-              full
-              disabled={false}
-              style={{ backgroundColor: primaryColor }}
-              onPress={this.onFormSubmit}
+        {!uploading ? (
+          <React.Fragment>
+            <Content
+              contentContainerStyle={{
+                ...rnSetPadding(BASE_SPACE, "horizontal")
+              }}
             >
-              <Text style={{ fontFamily: "font", color: bgColor }}>Create</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
+              <FormGenerator
+                ref={form => (this.form = form)}
+                structure={this.state.formStructure}
+              />
+            </Content>
+            <Footer>
+              <FooterTab>
+                <Button
+                  full
+                  disabled={false}
+                  style={{ backgroundColor: primaryColor }}
+                  onPress={this.onFormSubmit}
+                >
+                  <Text style={{ fontFamily: "font", color: bgColor }}>
+                    Create
+                  </Text>
+                </Button>
+              </FooterTab>
+            </Footer>
+          </React.Fragment>
+        ) : (
+          <LoadingScreen text="Uploading..." />
+        )}
       </Container>
     ) : (
       <LoadingScreen />
@@ -105,6 +104,7 @@ class AddEvent extends Component {
   }
 
   _uploadImg = async (uri, name) => {
+    console.log(uri);
     const response = await fetch(uri);
     const blob = await response.blob();
 
@@ -114,77 +114,58 @@ class AddEvent extends Component {
   };
 
   onFormSubmit = () => {
-    this.setState({ animating: true }, () => {
-      const formData = this.state.formData;
-      const name = "cover_" + new Date().valueOf();
-      const { cover, ...data } = formData;
-      const { uri, cancelled, type, ...restCover } = cover;
+    const { formData } = this.form.state;
+    const name = "cover_" + new Date().valueOf();
+    const { cover, ...data } = formData;
 
-      if (cover) {
-        this._uploadImg(cover.uri, name)
-          .then(p => {
-            p.ref.getDownloadURL().then(uri => {
-              const newField = {
-                ...data,
-                date: moment(data.date).format("DD-MM-YYYY"),
-                createdAt: moment(new Date()).format("DD-MM-YYYY"),
-                img: { ...restCover, uri }
-              };
-              DB.push("events", {
-                data: {
-                  ...newField
-                },
-                then: err => {
-                  console.log(err);
-                  this.setState({ animating: false });
-                }
-              });
-              console.log(...newField);
-            });
-          })
-          .catch(err => {
-            console.log(err);
-            this.setState({ animating: false });
-          });
+    const keys = Object.keys(formData);
+    let noError = true;
+    keys.forEach(key => {
+      if (!formData[key]) {
+        noError = false;
       }
     });
-  };
 
-  onInputChange = (name, rest) => {
-    const { formData } = this.state;
-    formData[name] = rest[0];
-
-    this.setState({ formData });
-  };
-
-  generateForm = el => {
-    const struct = this.state.formStructure;
-    const keys = Object.keys(struct);
-
-    const data = keys.map(key => {
-      const el = struct[key];
-      const { type, placeholder, label, children, data, row } = el;
-      const _type = type || "text";
-      const _formField = (
-        <FormField
-          key={key}
-          {...{ [_type]: true }}
-          data={data}
-          placeholder={placeholder}
-          label={label}
-          name={key}
-          change={this.onInputChange}
-          value={this.state.formData[key]}
-        >
-          {/* {children && this.generateForm(children)} */}
-        </FormField>
-      );
-      const _output = row ? <Grid style={{ ...rnFill }} /> : _formField;
-
-      return _output;
-    });
-
-    return data;
+    if (noError) {
+      if (cover) {
+        const { uri, cancelled, type, ...restCover } = cover;
+        this.setState({ uploading: true }, () => {
+          this._uploadImg(cover.uri, name)
+            .then(p =>
+              p.ref.getDownloadURL().then(uri => {
+                const newField = {
+                  ...data,
+                  date: moment(data.date).format("DD-MM-YYYY"),
+                  createdAt: moment(new Date()).format("DD-MM-YYYY"),
+                  img: { ...restCover, uri }
+                };
+                DB.push("events", {
+                  data: {
+                    ...newField
+                  },
+                  then: err => {
+                    console.log(err);
+                    this.form.resetFormData();
+                  }
+                });
+                console.log(...newField);
+              })
+            )
+            .catch(err => {
+              console.log(err);
+            })
+            .then(() => {
+              this.setState({ uploading: false });
+            });
+        });
+      }
+    } else {
+      Toast.show({
+        text: "Fill all the fields",
+        type: "warning",
+        buttonText: "Close"
+      });
+    }
   };
 }
 
@@ -218,43 +199,3 @@ const styles = StyleSheet.create({
     elevation: null
   }
 });
-
-{
-  /* <FormField label="Event Prices" container>
-  <Grid style={{ ...rnFill }}>
-    <Col>
-      <FormField
-        placeholder="Ticket Type"
-        picker
-        data={DB.ticketType}
-      />
-    </Col>
-    <Col>
-      <FormField
-        placeholder="Ticket Price"
-        keyboardType="numeric"
-      />
-    </Col>
-    <Col style={{ width: 45 }}>
-      <Button
-        onPress={() => alert("clicked btn")}
-        style={{ marginTop: 10 }}
-        transparent
-        rounded
-        full
-      >
-        <Feather name="trash" size={16} color="#FF5555" />
-      </Button>
-    </Col>
-  </Grid>
-</FormField>
-  <Button
-    onPress={() => alert("clicked btn")}
-    style={{ marginBottom: BASE_SPACE }}
-    full
-    bordered
-  >
-    <Icon name="plus" type="Feather" fontSize={14} />
-    <Text>Add Price</Text>
-  </Button> */
-}
