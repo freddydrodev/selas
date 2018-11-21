@@ -10,3 +10,5 @@ export const borderTag = "#BACFFF";
 export const linkActive = primaryColor;
 export const STAR_COLOR = "#F5D157";
 export const DANGER_COLOR = "#FF4F6F";
+export const ALERT_DANGER_COLOR = "#f7cacc";
+export const ALERT_DANGER_BORDER_COLOR = "#fb6b6f";

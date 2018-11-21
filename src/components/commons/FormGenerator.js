@@ -1,11 +1,15 @@
 import React, { Component } from "react";
-import { Form, Text } from "native-base";
+import { Form, Text, View } from "native-base";
 import PropTypes from "prop-types";
 import FormField from "./FormField";
 
 class FormGenerator extends Component {
   state = {
     formData: {}
+  };
+
+  updateData = data => {
+    this.setState({ formData: data });
   };
 
   //generate formData base on the structure key to track data
@@ -49,7 +53,7 @@ class FormGenerator extends Component {
     const keys = Object.keys(structure);
 
     const formItems = keys.map(key => {
-      const { label, type, placeholder, data } = structure[key];
+      const { label, type, placeholder, data, secure } = structure[key];
 
       //generating the input
       const _formItem = (
@@ -60,6 +64,7 @@ class FormGenerator extends Component {
           change={this.onInputChange}
           label={label || key}
           type={type}
+          secure={secure}
           value={this.state.formData[key]}
           placeholder={placeholder}
         />
@@ -71,7 +76,7 @@ class FormGenerator extends Component {
   };
 
   render() {
-    return <Form>{this.generateForm()}</Form>;
+    return <Form style={this.props.style}>{this.generateForm()}</Form>;
   }
 }
 

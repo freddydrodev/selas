@@ -37,6 +37,7 @@ class FormField extends Component {
       change,
       value,
       type,
+      secure,
       ...args
     } = this.props;
     const { imageSelected } = this.state;
@@ -142,6 +143,7 @@ class FormField extends Component {
               placeholder={placeholder}
               keyboardAppearance="light"
               value={value}
+              secureTextEntry={secure}
               onChangeText={value => change(_key, value)}
             />
           </Item>

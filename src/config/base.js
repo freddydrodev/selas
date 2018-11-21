@@ -10,9 +10,11 @@ const app = firebase.initializeApp({
   messagingSenderId: "1022519776592"
 });
 
+const AUTH = app.auth();
+
 const database = app.database();
 
 const DB = Rebase.createClass(database);
 //Storage
 const STORAGE = app.storage();
-export { STORAGE, DB };
+export { STORAGE, DB, AUTH };
