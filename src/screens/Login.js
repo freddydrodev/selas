@@ -10,23 +10,9 @@ import {
   FooterTab
 } from "native-base";
 import FormGenerator from "../components/commons/FormGenerator";
-import {
-  textDark,
-  rnFill,
-  primaryColor,
-  bgColor,
-  textColor,
-  DANGER_COLOR,
-  ALERT_DANGER_COLOR,
-  ALERT_DANGER_BORDER_COLOR
-} from "../tools";
+import { textDark, rnFill, primaryColor, bgColor, textColor } from "../tools";
 import { AUTH } from "../config/base";
-
-const Alert = ({ msg }) => (
-  <View style={style.alertContainer}>
-    <Text style={style.alertMsg}>{msg}</Text>
-  </View>
-);
+import Alert from "../components/commons/Alert";
 
 class Login extends Component {
   state = {
@@ -56,14 +42,10 @@ class Login extends Component {
     let errorMessage = [];
     if (this.validateForm(this.form)) {
       const { email, password } = this.form.state.formData;
-      AUTH.signInWithEmailAndPassword(email, password)
-        .then(res => {
-          console.log(res);
-        })
-        .catch(err => {
-          errorMessage = [err.message];
-          this.setState({ errorMessage });
-        });
+      AUTH.signInWithEmailAndPassword(email, password).catch(err => {
+        errorMessage = [err.message];
+        this.setState({ errorMessage });
+      });
     }
   };
 
@@ -132,19 +114,5 @@ const style = StyleSheet.create({
   text: {
     fontFamily: "font",
     color: textColor
-  },
-  alertContainer: {
-    padding: 5,
-    borderRadius: 3,
-    backgroundColor: ALERT_DANGER_COLOR,
-    borderColor: ALERT_DANGER_BORDER_COLOR,
-    borderWidth: 1,
-    borderStyle: "solid",
-    marginBottom: 10
-  },
-  alertMsg: {
-    fontFamily: "font",
-    color: ALERT_DANGER_BORDER_COLOR,
-    fontSize: 13
   }
 });

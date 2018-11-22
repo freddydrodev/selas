@@ -10,7 +10,7 @@ import reducers from "./src/reducers";
 import { View, Root } from "native-base";
 import { rnFill } from "./src/tools";
 import { DB } from "./src/config/base";
-import { updateEvents, updateCategories } from "./src/actions";
+import { updateEvents, updateCategories, updateUsers } from "./src/actions";
 
 class RootApp extends Component {
   state = { isReady: false };
@@ -99,6 +99,18 @@ class RootApp extends Component {
         console.log(err);
       }
     });
+
+    DB.listenTo("users", {
+      context: this,
+      asArray: true,
+      then: users => {
+        console.log("[USERS]", users);
+        this.props.updateUsers(users);
+      },
+      onFailure: err => {
+        console.log(err);
+      }
+    });
   }
 
   render() {
@@ -114,7 +126,7 @@ class RootApp extends Component {
 
 const AppConnect = connect(
   null,
-  { updateEvents, updateCategories }
+  { updateEvents, updateCategories, updateUsers }
 )(RootApp);
 
 export default class App extends Component {

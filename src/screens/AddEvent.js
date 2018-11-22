@@ -18,11 +18,14 @@ import {
   rnSetPadding,
   BASE_SPACE,
   bgLight,
-  primaryColor
+  primaryColor,
+  ALERT_DANGER_COLOR,
+  ALERT_DANGER_BORDER_COLOR
 } from "../tools";
 import { STORAGE, DB } from "../config/base";
 import LoadingScreen from "../components/LoadingScreen";
 import FormGenerator from "../components/commons/FormGenerator";
+import Alert from "../components/commons/Alert";
 
 class AddEvent extends Component {
   static navigationOptions = {
@@ -36,6 +39,7 @@ class AddEvent extends Component {
   };
 
   state = {
+    errorMessage: [],
     uploading: false,
     isReady: true,
     formData: {},
@@ -74,6 +78,9 @@ class AddEvent extends Component {
                 ...rnSetPadding(BASE_SPACE, "horizontal")
               }}
             >
+              {this.state.errorMessage.map((msg, i) => (
+                <Alert msg={msg} key={i} />
+              ))}
               <FormGenerator
                 ref={form => (this.form = form)}
                 structure={this.state.formStructure}
@@ -115,18 +122,26 @@ class AddEvent extends Component {
 
   onFormSubmit = () => {
     const { formData } = this.form.state;
+    console.log("FD", formData);
+
+    let errorMessage = Object.keys(formData)
+      .map(key => !formData[key] && `${key} is required!`)
+      .filter(formData => !!formData);
+
+    this.setState({ errorMessage });
+
     const name = "cover_" + new Date().valueOf();
     const { cover, ...data } = formData;
 
     const keys = Object.keys(formData);
-    let noError = true;
-    keys.forEach(key => {
-      if (!formData[key]) {
-        noError = false;
-      }
-    });
+    // let noError = true;
+    // keys.forEach(key => {
+    //   if (!formData[key]) {
+    //     noError = false;
+    //   }
+    // });
 
-    if (noError) {
+    if (errorMessage.length === 0) {
       if (cover) {
         const { uri, cancelled, type, ...restCover } = cover;
         this.setState({ uploading: true }, () => {
@@ -140,9 +155,7 @@ class AddEvent extends Component {
                   img: { ...restCover, uri }
                 };
                 DB.push("events", {
-                  data: {
-                    ...newField
-                  },
+                  data: { ...newField },
                   then: err => {
                     console.log(err);
                     this.form.resetFormData();
@@ -155,7 +168,7 @@ class AddEvent extends Component {
               console.log(err);
             })
             .then(() => {
-              this.setState({ uploading: false });
+              this.setState({ uploading: false, errorMessage: "" });
             });
         });
       }
@@ -197,5 +210,23 @@ const styles = StyleSheet.create({
   },
   imageSytle: {
     elevation: null
+  },
+  text: {
+    fontFamily: "font",
+    color: textColor
+  },
+  alertContainer: {
+    padding: 5,
+    borderRadius: 3,
+    backgroundColor: ALERT_DANGER_COLOR,
+    borderColor: ALERT_DANGER_BORDER_COLOR,
+    borderWidth: 1,
+    borderStyle: "solid",
+    marginBottom: 10
+  },
+  alertMsg: {
+    fontFamily: "font",
+    color: ALERT_DANGER_BORDER_COLOR,
+    fontSize: 13
   }
 });

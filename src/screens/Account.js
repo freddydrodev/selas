@@ -1,8 +1,16 @@
 import React, { Component } from "react";
 import { StyleSheet } from "react-native";
-import { View, Text, Button } from "native-base";
+import {
+  View,
+  Text,
+  Button,
+  Container,
+  Content,
+  Footer,
+  FooterTab
+} from "native-base";
 import { AUTH } from "../config/base";
-import { textDark } from "../tools";
+import { textDark, primaryColor, bgColor } from "../tools";
 
 class Account extends Component {
   state = {};
@@ -26,12 +34,21 @@ class Account extends Component {
     const {} = style;
 
     return (
-      <View>
-        <Text> Account </Text>
-        <Button block onPress={this.logout}>
-          <Text>Logout</Text>
-        </Button>
-      </View>
+      <Container>
+        <Content
+          style={{ paddingHorizontal: 20 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text>Account</Text>
+        </Content>
+        <Footer>
+          <FooterTab>
+            <Button full disabled={false} danger onPress={this.logout}>
+              <Text style={{ fontFamily: "font", color: bgColor }}>Logout</Text>
+            </Button>
+          </FooterTab>
+        </Footer>
+      </Container>
     );
   }
 }

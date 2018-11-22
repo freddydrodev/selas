@@ -10,24 +10,10 @@ import {
   FooterTab
 } from "native-base";
 import FormGenerator from "../components/commons/FormGenerator";
-import {
-  textDark,
-  rnFill,
-  primaryColor,
-  bgColor,
-  textColor,
-  DANGER_COLOR,
-  ALERT_DANGER_COLOR,
-  ALERT_DANGER_BORDER_COLOR
-} from "../tools";
+import { textDark, rnFill, primaryColor, bgColor, textColor } from "../tools";
 import { AUTH, DB } from "../config/base";
 import LoadingScreen from "../components/LoadingScreen";
-
-const Alert = ({ msg }) => (
-  <View style={style.alertContainer}>
-    <Text style={style.alertMsg}>{msg}</Text>
-  </View>
-);
+import Alert from "../components/commons/Alert";
 
 class Registration extends Component {
   state = {
@@ -67,36 +53,21 @@ class Registration extends Component {
       console.log(this.state.formData);
       const { name, email, password } = this.form.state.formData;
       AUTH.createUserWithEmailAndPassword(email, password)
-        .then(res => {
-          const user = AUTH.currentUser;
-
-          return user
-            ? user.updateProfile({ displayName: name }).then(() =>
-                DB.post(`users/${user.uid}`, {
-                  data: { ...user }
-                })
-                  .then(() => {
-                    this.props.navigation.navigate("app");
-                  })
-                  .catch(err => err)
-              )
-            : "Erreur while retrieving user";
-        })
+        .then(() =>
+          AUTH.currentUser.updateProfile({
+            displayName: name
+          })
+        )
         .catch(err => {
           errorMessage = [err.message];
 
-          this.setState({ errorMessage, loadingMsg: null }, () => {
-            console.log(this.form.updateData(this.state.formData));
-          });
+          this.setState({ errorMessage, loadingMsg: null });
         });
     }
   };
 
   validateForm = form => {
     const data = form.state.formData;
-    this.setState({ formData: data }, () => {
-      console.log("added");
-    });
 
     let errorMessage = Object.keys(data)
       .map(key => !data[key] && `${key} is required!`)
@@ -111,7 +82,7 @@ class Registration extends Component {
         return false;
       }
       //password length
-      if (data["password"].length < 8) {
+      if (data["password"].length < 2) {
         this.setState({
           errorMessage: ["Password must be at least 8 characters"]
         });
@@ -183,19 +154,5 @@ const style = StyleSheet.create({
   text: {
     fontFamily: "font",
     color: textColor
-  },
-  alertContainer: {
-    padding: 5,
-    borderRadius: 3,
-    backgroundColor: ALERT_DANGER_COLOR,
-    borderColor: ALERT_DANGER_BORDER_COLOR,
-    borderWidth: 1,
-    borderStyle: "solid",
-    marginBottom: 10
-  },
-  alertMsg: {
-    fontFamily: "font",
-    color: ALERT_DANGER_BORDER_COLOR,
-    fontSize: 13
   }
 });

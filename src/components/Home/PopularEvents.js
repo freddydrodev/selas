@@ -18,6 +18,7 @@ const PopularEvents = ({ data }) => {
         sliderWidth={SLIDER_WIDTH}
         itemWidth={SLIDER_ITEM_WIDTH}
         autoplay
+        loop
       />
     </HomeSection>
   );
