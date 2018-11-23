@@ -83,11 +83,11 @@ const MainHeader = ({ title, navigation, currentUser, ...rest }) => {
         </Title>
       </Body>
       <Right>
-        {/* <Btn
+        <Btn
           type="Feather"
           name="search"
           press={() => navigation.navigate("search")}
-        /> */}
+        />
         {currentUser.admin && (
           <Btn
             type="Feather"

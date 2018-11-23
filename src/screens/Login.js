@@ -42,10 +42,12 @@ class Login extends Component {
     let errorMessage = [];
     if (this.validateForm(this.form)) {
       const { email, password } = this.form.state.formData;
-      AUTH.signInWithEmailAndPassword(email, password).catch(err => {
-        errorMessage = [err.message];
-        this.setState({ errorMessage });
-      });
+      AUTH.signInWithEmailAndPassword(email.trim(), password.trim()).catch(
+        err => {
+          errorMessage = [err.message];
+          this.setState({ errorMessage });
+        }
+      );
     }
   };
 

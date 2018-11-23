@@ -60,7 +60,6 @@ class EventDetail extends Component {
   };
 
   componentDidMount() {
-    console.log("[EVENT_DETAILS/DID_MOUNT]", this.props.currentUser);
     const { cart } = this.props.currentUser;
 
     const _ev = this.props.events.filter(
@@ -81,7 +80,6 @@ class EventDetail extends Component {
     const { currentUser } = this.props;
     const { uid } = currentUser;
     const cart = currentUser.cart || {};
-    console.log("[DETAILS/BEFORE]", cart);
     cart[event.key] = {
       eventId: event.key,
       name: event.name,
@@ -94,24 +92,8 @@ class EventDetail extends Component {
       total: event.price * qty,
       qrcode: generateID(21)
     };
-    console.log("[DETAILS/AFTER]", cart);
 
     if (qty > 0) {
-      // const newCart = {
-      //   ...cart,
-      //   [event.key]: {
-      //     eventId: event.key,
-      //     name: event.name,
-      //     price: event.price,
-      //     date: event.date,
-      //     location: event.location,
-      //     createdAt: new Date(),
-      //     quantity: qty,
-      //     total: event.price * qty,
-      //     qrcode: generateID(21)
-      //   }
-      // };
-      // console.log(newCart);
       const data = { ...currentUser, cart };
 
       DB.post(`users/${uid}`, { data }).then(() => {

@@ -41,12 +41,6 @@ class Account extends Component {
           showsVerticalScrollIndicator={false}
         >
           <View style={{ marginBottom: 20 }}>
-            <H3 style={text}>Display name</H3>
-            <H1 style={textBold}>
-              {AUTH.currentUser.display || "Not defined"}
-            </H1>
-          </View>
-          <View style={{ marginBottom: 20 }}>
             <H3 style={text}>Email</H3>
             <H1 style={textBold}>{AUTH.currentUser.email}</H1>
           </View>

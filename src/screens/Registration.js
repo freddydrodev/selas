@@ -19,7 +19,7 @@ class Registration extends Component {
   state = {
     formData: {},
     formStructure: {
-      name: { label: "Fullname", placeholder: "Enter your fullname" },
+      // name: { label: "Fullname", placeholder: "Enter your fullname" },
       email: { label: "Email", placeholder: "Enter your email address" },
       password: {
         label: "Password",
@@ -50,9 +50,8 @@ class Registration extends Component {
     let errorMessage = [];
 
     if (this.validateForm(this.form)) {
-      console.log(this.state.formData);
       const { name, email, password } = this.form.state.formData;
-      AUTH.createUserWithEmailAndPassword(email, password)
+      AUTH.createUserWithEmailAndPassword(email.trim(), password.trim())
         .then(() =>
           AUTH.currentUser.updateProfile({
             displayName: name
@@ -75,14 +74,14 @@ class Registration extends Component {
 
     if (errorMessage.length === 0) {
       //name length
-      if (data["name"].length < 6) {
-        this.setState({
-          errorMessage: ["name must be at least 6 characters"]
-        });
-        return false;
-      }
+      // if (data["name"].length < 6) {
+      //   this.setState({
+      //     errorMessage: ["name must be at least 6 characters"]
+      //   });
+      //   return false;
+      // }
       //password length
-      if (data["password"].length < 2) {
+      if (data["password"].length < 8) {
         this.setState({
           errorMessage: ["Password must be at least 8 characters"]
         });

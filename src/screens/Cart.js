@@ -5,7 +5,6 @@ import {
   Container,
   Text,
   Content,
-  View,
   List,
   ListItem,
   Left,
@@ -15,22 +14,16 @@ import {
   Button
 } from "native-base";
 import MainHeader from "../components/commons/MainHeader";
+import { textColor, textLight } from "../tools";
 
 class Cart extends Component {
   state = {
     carts: []
   };
 
-  componentDidMount() {
-    console.log(Object.keys(this.props.currentUser.cart).length);
-    // if (this.props.currentUser.cart)
-    // const carts = []
-    // console.log();
-  }
-
   displayData = () => {
     const { cart } = this.props.currentUser;
-    const keys = Object.keys(cart);
+    const keys = Object.keys(cart || {});
 
     if (keys.length > 0) {
       return keys.map(key => {
@@ -65,7 +58,19 @@ class Cart extends Component {
         );
       });
     } else {
-      return <Text>Add events to your cart</Text>;
+      return (
+        <Text
+          style={{
+            padding: 20,
+            fontFamily: "font",
+            color: textLight,
+            backgroundColor: "#f0f0f0",
+            textAlign: "center"
+          }}
+        >
+          No event your cart
+        </Text>
+      );
     }
   };
 
