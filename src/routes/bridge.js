@@ -19,6 +19,9 @@ class Bridge extends Component {
       clearTimeout(tm);
       if (user) {
         const { displayName, email, emailVerified, uid } = user;
+        if (!emailVerified) {
+          user.sendEmailVerification();
+        }
         DB.listenTo("users", {
           context: this,
           asArray: true,

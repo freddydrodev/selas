@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet } from "react-native";
 import { Image } from "react-native-expo-image-cache";
 import UIStepper from "react-native-ui-stepper";
 import { connect } from "react-redux";
@@ -205,21 +205,23 @@ class EventDetail extends Component {
               </Col>
             </Row>
             {errorMessage && <Alert msg={errorMessage} />}
-            <Button
-              rounded
-              full
-              style={{
-                marginVertical: 20,
-                backgroundColor: !added ? primaryColor : DANGER_COLOR,
-                elevation: 0
-              }}
-              danger={added}
-              onPress={!added ? this.addToCart : this.removeFromCart}
-            >
-              <Text style={{ fontFamily: "font" }}>
-                {added ? "Remove from" : "Add to"} cart
-              </Text>
-            </Button>
+            {!this.props.currentUser.admin && (
+              <Button
+                rounded
+                full
+                style={{
+                  marginVertical: 20,
+                  backgroundColor: !added ? primaryColor : DANGER_COLOR,
+                  elevation: 0
+                }}
+                danger={added}
+                onPress={!added ? this.addToCart : this.removeFromCart}
+              >
+                <Text style={{ fontFamily: "font" }}>
+                  {added ? "Remove from" : "Add to"} cart
+                </Text>
+              </Button>
+            )}
           </View>
         </Content>
       </Container>

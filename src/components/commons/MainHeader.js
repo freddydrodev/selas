@@ -88,12 +88,20 @@ const MainHeader = ({ title, navigation, currentUser, ...rest }) => {
           name="search"
           press={() => navigation.navigate("search")}
         />
+
         {currentUser.admin && (
-          <Btn
-            type="Feather"
-            name="plus"
-            press={() => navigation.navigate("add")}
-          />
+          <React.Fragment>
+            <Btn
+              type="Feather"
+              name="activity"
+              press={() => navigation.navigate("reports")}
+            />
+            <Btn
+              type="Feather"
+              name="plus"
+              press={() => navigation.navigate("add")}
+            />
+          </React.Fragment>
         )}
       </Right>
     </Header>

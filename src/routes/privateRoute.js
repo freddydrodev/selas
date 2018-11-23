@@ -15,6 +15,7 @@ import Search from "../screens/Search";
 import Account from "../screens/Account";
 import Settings from "../screens/Settings";
 import { Icon } from "native-base";
+import Reports from "../screens/Reports";
 
 const tabRoute = createBottomTabNavigator(
   {
@@ -102,6 +103,7 @@ const route = createStackNavigator({
     }
   },
   add: AddEvent,
+  reports: Reports,
   eventDetail: {
     screen: EventDetail,
     navigationOptions: {

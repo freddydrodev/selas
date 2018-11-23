@@ -2,12 +2,12 @@ import Rebase from "re-base";
 import firebase from "firebase";
 
 const app = firebase.initializeApp({
-  apiKey: "AIzaSyB96JwsoCteXpowXRudmKhk2peObsIa3OE",
-  authDomain: "ts-final.firebaseapp.com",
-  databaseURL: "https://ts-final.firebaseio.com",
-  projectId: "ts-final",
-  storageBucket: "ts-final.appspot.com",
-  messagingSenderId: "1022519776592"
+  apiKey: "AIzaSyBM2CuHSA8K9hlDYDNBOopF2JLX3erh3Z8",
+  authDomain: "selassie-70b8f.firebaseapp.com",
+  databaseURL: "https://selassie-70b8f.firebaseio.com",
+  projectId: "selassie-70b8f",
+  storageBucket: "selassie-70b8f.appspot.com",
+  messagingSenderId: "1066200350467"
 });
 
 const AUTH = app.auth();

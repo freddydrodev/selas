@@ -39,7 +39,6 @@ class AddEvent extends Component {
   };
 
   state = {
-    errorMessage: [],
     uploading: false,
     isReady: true,
     formData: {},
@@ -78,9 +77,6 @@ class AddEvent extends Component {
                 ...rnSetPadding(BASE_SPACE, "horizontal")
               }}
             >
-              {this.state.errorMessage.map((msg, i) => (
-                <Alert msg={msg} key={i} />
-              ))}
               <FormGenerator
                 ref={form => (this.form = form)}
                 structure={this.state.formStructure}
@@ -128,18 +124,12 @@ class AddEvent extends Component {
       .map(key => !formData[key] && `${key} is required!`)
       .filter(formData => !!formData);
 
-    this.setState({ errorMessage });
+    // this.setState({ errorMessage });
 
     const name = "cover_" + new Date().valueOf();
     const { cover, ...data } = formData;
 
     const keys = Object.keys(formData);
-    // let noError = true;
-    // keys.forEach(key => {
-    //   if (!formData[key]) {
-    //     noError = false;
-    //   }
-    // });
 
     if (errorMessage.length === 0) {
       if (cover) {
