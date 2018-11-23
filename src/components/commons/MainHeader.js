@@ -58,7 +58,6 @@ const Btn = ({ press, name, type, btnStyle }) => (
 );
 
 const MainHeader = ({ title, navigation, currentUser, ...rest }) => {
-  console.log(currentUser);
   return (
     <Header
       transparent

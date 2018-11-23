@@ -104,7 +104,6 @@ class RootApp extends Component {
       context: this,
       asArray: true,
       then: users => {
-        console.log("[USERS]", users);
         this.props.updateUsers(users);
       },
       onFailure: err => {

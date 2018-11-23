@@ -18,7 +18,7 @@ const style = StyleSheet.create({
     borderColor: ALERT_DANGER_BORDER_COLOR,
     borderWidth: 1,
     borderStyle: "solid",
-    marginBottom: 10
+    marginVertical: 5
   },
   alertMsg: {
     fontFamily: "font",

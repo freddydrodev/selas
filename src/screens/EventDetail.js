@@ -23,12 +23,15 @@ import {
   TITLE_SPACE,
   bgLight,
   primaryColor,
-  bgColor
+  bgColor,
+  DANGER_COLOR
 } from "../tools";
 import LoadingScreen from "../components/LoadingScreen";
 import CardDetail from "../components/commons/CardDetail";
 import StarList from "../components/commons/StarList";
-import { DB } from "../config/base";
+import { DB, AUTH } from "../config/base";
+import generateID from "../tools/generateID";
+import Alert from "../components/commons/Alert";
 
 const PriceSection = ({ basePrice }) => (
   <React.Fragment>
@@ -51,20 +54,89 @@ class EventDetail extends Component {
   state = {
     id: "-LRSJxuhw7k6uqbZZ9ak",
     event: null,
-    qty: 0
+    errorMessage: null,
+    qty: 0,
+    added: false
   };
 
   componentDidMount() {
+    console.log("[EVENT_DETAILS/DID_MOUNT]", this.props.currentUser);
+    const { cart } = this.props.currentUser;
+
     const _ev = this.props.events.filter(
       ev => ev.key === this.props.navigation.getParam("id", "undefined")
     );
 
     if (_ev[0]) {
-      this.setState({ event: _ev[0] });
+      this.setState({ event: _ev[0] }, () => {
+        if (cart) {
+          this.setState({ added: !!cart[this.state.event.key] });
+        }
+      });
     }
   }
 
-  addToCart = () => {};
+  addToCart = () => {
+    const { event, qty } = this.state;
+    const { currentUser } = this.props;
+    const { uid } = currentUser;
+    const cart = currentUser.cart || {};
+    console.log("[DETAILS/BEFORE]", cart);
+    cart[event.key] = {
+      eventId: event.key,
+      name: event.name,
+      price: event.price,
+      date: event.date,
+      location: event.location,
+      createdAt: new Date(),
+      quantity: qty,
+      imgURI: event.img.uri,
+      total: event.price * qty,
+      qrcode: generateID(21)
+    };
+    console.log("[DETAILS/AFTER]", cart);
+
+    if (qty > 0) {
+      // const newCart = {
+      //   ...cart,
+      //   [event.key]: {
+      //     eventId: event.key,
+      //     name: event.name,
+      //     price: event.price,
+      //     date: event.date,
+      //     location: event.location,
+      //     createdAt: new Date(),
+      //     quantity: qty,
+      //     total: event.price * qty,
+      //     qrcode: generateID(21)
+      //   }
+      // };
+      // console.log(newCart);
+      const data = { ...currentUser, cart };
+
+      DB.post(`users/${uid}`, { data }).then(() => {
+        this.setState({ added: true, errorMessage: null });
+      });
+    } else {
+      this.setState({ errorMessage: "Increase the quantity first" });
+    }
+  };
+
+  removeFromCart = () => {
+    const { event, added } = this.state;
+    const { currentUser } = this.props;
+    const { uid, cart } = currentUser;
+
+    if (added) {
+      delete cart[event.key];
+    }
+
+    const data = { ...currentUser, cart };
+
+    DB.post(`users/${uid}`, { data }).then(() => {
+      this.setState({ added: false });
+    });
+  };
 
   render() {
     const {
@@ -75,8 +147,7 @@ class EventDetail extends Component {
       simpleTextStyle,
       boldTextStyle
     } = styles;
-    const { event, qty } = this.state;
-    console.log(event);
+    const { event, qty, added, errorMessage } = this.state;
     return event ? (
       <Container>
         <Content>
@@ -151,18 +222,21 @@ class EventDetail extends Component {
                 <Text style={boldTextStyle}>{event.price * qty}$</Text>
               </Col>
             </Row>
-
+            {errorMessage && <Alert msg={errorMessage} />}
             <Button
               rounded
               full
               style={{
                 marginVertical: 20,
-                backgroundColor: primaryColor,
+                backgroundColor: !added ? primaryColor : DANGER_COLOR,
                 elevation: 0
               }}
-              onClick={this.addToCart}
+              danger={added}
+              onPress={!added ? this.addToCart : this.removeFromCart}
             >
-              <Text style={{ fontFamily: "font" }}>Add to cart</Text>
+              <Text style={{ fontFamily: "font" }}>
+                {added ? "Remove from" : "Add to"} cart
+              </Text>
             </Button>
           </View>
         </Content>
@@ -173,8 +247,9 @@ class EventDetail extends Component {
   }
 }
 
-const mstp = ({ events }) => ({
-  events
+const mstp = ({ events, currentUser }) => ({
+  events,
+  currentUser
 });
 export default connect(mstp)(EventDetail);
 

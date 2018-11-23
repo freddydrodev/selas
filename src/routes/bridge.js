@@ -14,39 +14,46 @@ class Bridge extends Component {
         duration: 60000
       });
     }, 5000);
-    AUTH.onAuthStateChanged(async user => {
+
+    AUTH.onAuthStateChanged(user => {
       clearTimeout(tm);
       if (user) {
         const { displayName, email, emailVerified, uid } = user;
-        const users = await DB.fetch("users", {
+        DB.listenTo("users", {
           context: this,
-          asArray: true
-        });
+          asArray: true,
+          then: users => {
+            const inDB = users.filter(u => {
+              return u.uid === user.uid;
+            })[0];
 
-        const inDB = users.filter(u => {
-          return u.uid === user.uid;
-        })[0];
-
-        this.props.setCurrentUser(inDB || user);
-        // console.log("[BRIDGE]", inDB, user);
-        if (!!!inDB) {
-          DB.post(`users/${user.uid}`, {
-            data: {
-              displayName,
-              email,
-              emailVerified,
-              uid
+            this.props.setCurrentUser(inDB || user);
+            // console.log("[BRIDGE]", inDB, user);
+            if (!!!inDB) {
+              DB.post(`users/${user.uid}`, {
+                data: {
+                  displayName,
+                  email,
+                  emailVerified,
+                  uid
+                }
+              })
+                .then(() => {
+                  console.log("[BRIDGE/POST/DONE]");
+                })
+                .catch(err => console.war(err))
+                .then(() =>
+                  this.props.navigation.navigate(user ? "app" : "auth")
+                );
+            } else {
+              this.props.navigation.navigate(user ? "app" : "auth");
             }
-          })
-            .then(() => {
-              console.log("[BRIDGE/POST/DONE]");
-            })
-            .catch(err => console.war(err));
-        }
+          }
+        });
       } else {
         this.props.setCurrentUser(null);
+        this.props.navigation.navigate(user ? "app" : "auth");
       }
-      this.props.navigation.navigate(user ? "app" : "auth");
     });
   }
 

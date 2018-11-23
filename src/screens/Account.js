@@ -7,14 +7,14 @@ import {
   Container,
   Content,
   Footer,
-  FooterTab
+  FooterTab,
+  H1,
+  H3
 } from "native-base";
 import { AUTH } from "../config/base";
-import { textDark, primaryColor, bgColor } from "../tools";
+import { textDark, bgColor, textColor } from "../tools";
 
 class Account extends Component {
-  state = {};
-
   static navigationOptions = {
     headerStyle: { elevation: 0 },
     headerTitle: "Account",
@@ -24,6 +24,7 @@ class Account extends Component {
       color: textDark
     }
   };
+
   logout = () => {
     AUTH.signOut().then(() => {
       this.props.navigation.navigate("auth");
@@ -31,7 +32,7 @@ class Account extends Component {
   };
 
   render() {
-    const {} = style;
+    const { text, textBold } = style;
 
     return (
       <Container>
@@ -39,7 +40,20 @@ class Account extends Component {
           style={{ paddingHorizontal: 20 }}
           showsVerticalScrollIndicator={false}
         >
-          <Text>Account</Text>
+          <View style={{ marginBottom: 20 }}>
+            <H3 style={text}>Display name</H3>
+            <H1 style={textBold}>
+              {AUTH.currentUser.display || "Not defined"}
+            </H1>
+          </View>
+          <View style={{ marginBottom: 20 }}>
+            <H3 style={text}>Email</H3>
+            <H1 style={textBold}>{AUTH.currentUser.email}</H1>
+          </View>
+          <View style={{ marginBottom: 20 }}>
+            <H3 style={text}>Password</H3>
+            <H1 style={textBold}>Selected password</H1>
+          </View>
         </Content>
         <Footer>
           <FooterTab>
@@ -55,4 +69,15 @@ class Account extends Component {
 
 export default Account;
 
-const style = StyleSheet.create({});
+const style = StyleSheet.create({
+  textBold: {
+    fontFamily: "font",
+    fontWeight: "normal",
+    color: textDark
+  },
+  text: {
+    fontFamily: "font_thin",
+    fontWeight: "normal",
+    color: textColor
+  }
+});
