@@ -15,6 +15,7 @@ import Search from "../screens/Search";
 import Account from "../screens/Account";
 import Settings from "../screens/Settings";
 import { Icon } from "native-base";
+import Reports from "../screens/Reports";
 
 const tabRoute = createBottomTabNavigator(
   {
@@ -54,31 +55,31 @@ const tabRoute = createBottomTabNavigator(
           />
         )
       }
-    },
-    favorite: {
-      screen: Favorite,
-      navigationOptions: {
-        tabBarIcon: ({ focused, tintColor }) => (
-          <Icon
-            type="Feather"
-            name="heart"
-            style={{ color: tintColor, fontSize: 20 }}
-          />
-        )
-      }
-    },
-    settings: {
-      screen: Settings,
-      navigationOptions: {
-        tabBarIcon: ({ focused, tintColor }) => (
-          <Icon
-            type="Feather"
-            name="settings"
-            style={{ color: tintColor, fontSize: 20 }}
-          />
-        )
-      }
     }
+    // favorite: {
+    //   screen: Favorite,
+    //   navigationOptions: {
+    //     tabBarIcon: ({ focused, tintColor }) => (
+    //       <Icon
+    //         type="Feather"
+    //         name="heart"
+    //         style={{ color: tintColor, fontSize: 20 }}
+    //       />
+    //     )
+    //   }
+    // },
+    // settings: {
+    //   screen: Settings,
+    //   navigationOptions: {
+    //     tabBarIcon: ({ focused, tintColor }) => (
+    //       <Icon
+    //         type="Feather"
+    //         name="settings"
+    //         style={{ color: tintColor, fontSize: 20 }}
+    //       />
+    //     )
+    //   }
+    // }
   },
   {
     tabBarOptions: {
@@ -102,6 +103,7 @@ const route = createStackNavigator({
     }
   },
   add: AddEvent,
+  reports: Reports,
   eventDetail: {
     screen: EventDetail,
     navigationOptions: {

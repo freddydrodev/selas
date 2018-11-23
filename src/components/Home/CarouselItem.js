@@ -1,5 +1,7 @@
 import React from "react";
-import { StyleSheet, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import { withNavigation } from "react-navigation";
+import { Image } from "react-native-expo-image-cache";
 import { View, Text, H3 } from "native-base";
 import {
   rnFill,
@@ -16,7 +18,7 @@ import StarList from "../commons/StarList";
 
 const PriceSection = ({ basePrice }) => (
   <React.Fragment>
-    <Text style={styles.fromStyle}>From</Text>
+    <Text style={styles.fromStyle}>Price</Text>
     <Text style={styles.priceStyle}>{basePrice}$</Text>
   </React.Fragment>
 );
@@ -25,23 +27,26 @@ const CarouselItem = ({
   id,
   name,
   location,
+  price,
   date,
-  hour,
-  basePrice,
   rank,
   category,
-  img
+  img,
+  navigation
 }) => {
   const { imageStyle, detailStyle, boxSeparatorStyle, titleStyle } = styles;
+
   return (
     <TouchableOpacity
-      onPress={() => alert(`Clicked Event ID: ${id}`)}
+      onPress={() => navigation.navigate("eventDetail", { id })}
       style={{ ...rnSetPadding(BASE_SPACE, "horizontal") }}
     >
       <View style={imageStyle}>
         <Image
-          source={{ uri: img.uri }}
-          style={{ ...rnFill, resizeMode: "cover" }}
+          uri={img.uri}
+          preview={{ uri: img.cached }}
+          resizeMode="cover"
+          style={{ ...rnFill }}
         />
       </View>
       <View style={detailStyle}>
@@ -56,7 +61,7 @@ const CarouselItem = ({
             <CardDetail name="calendar" title={date} />
           </View>
           <View style={{ alignItems: "flex-end" }}>
-            <PriceSection basePrice={basePrice} />
+            <PriceSection basePrice={price} />
           </View>
         </View>
       </View>
@@ -64,12 +69,12 @@ const CarouselItem = ({
   );
 };
 
-export default CarouselItem;
+export default withNavigation(CarouselItem);
 
 // const star
 const styles = StyleSheet.create({
-  fromStyle: { fontFamily: "ws_light", color: textLight, fontSize: 12 },
-  priceStyle: { fontFamily: "ws_sBold", color: linkActive, fontSize: 24 },
+  fromStyle: { fontFamily: "font_light", color: textLight, fontSize: 12 },
+  priceStyle: { fontFamily: "font_sBold", color: linkActive, fontSize: 24 },
   imageStyle: {
     ...rnFill,
     height: 150,
@@ -90,7 +95,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between"
   },
   titleStyle: {
-    fontFamily: "ws_light",
+    fontFamily: "font_light",
     color: textDark,
     marginBottom: TITLE_SPACE
   }

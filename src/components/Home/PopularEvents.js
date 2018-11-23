@@ -13,7 +13,7 @@ const PopularEvents = ({ data }) => {
     >
       <Carousel
         containerCustomStyle={{ marginBottom: 30 }}
-        data={data}
+        data={[...data].filter((e, i) => i < 5)}
         renderItem={({ item }) => <CarouselItem {...item} id={item.key} />}
         sliderWidth={SLIDER_WIDTH}
         itemWidth={SLIDER_ITEM_WIDTH}

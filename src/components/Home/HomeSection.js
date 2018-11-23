@@ -31,13 +31,13 @@ const styles = StyleSheet.create({
     ...rnSetPadding(BASE_SPACE, "horizontal")
   },
   titleStyle: {
-    fontFamily: "ws_xBold",
+    fontFamily: "font_xBold",
     marginBottom: TITLE_SPACE,
     color: primaryColor
   },
   subtitleStyle: {
     color: textLight,
-    fontFamily: "ws_light",
+    fontFamily: "font_light",
     marginBottom: BASE_SPACE
   }
 });

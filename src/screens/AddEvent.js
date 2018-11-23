@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { StyleSheet, ProgressBarAndroid } from "react-native";
-import { Permissions } from "expo";
+import { StyleSheet } from "react-native";
 import moment from "moment";
+import { connect } from "react-redux";
 import {
   Container,
   Content,
@@ -9,10 +9,8 @@ import {
   Footer,
   Button,
   FooterTab,
-  Form,
-  ProgressBar
+  Toast
 } from "native-base";
-import { Grid } from "react-native-easy-grid";
 import {
   textDark,
   bgColor,
@@ -20,97 +18,88 @@ import {
   rnSetPadding,
   BASE_SPACE,
   bgLight,
-  rnFill,
-  primaryColor
+  primaryColor,
+  ALERT_DANGER_COLOR,
+  ALERT_DANGER_BORDER_COLOR
 } from "../tools";
-import FormField from "../components/commons/FormField";
-import { storage, db } from "../config/base";
+import { STORAGE, DB } from "../config/base";
 import LoadingScreen from "../components/LoadingScreen";
-import addEventFormStructure from "../config/addEventFormStructure";
+import FormGenerator from "../components/commons/FormGenerator";
+import Alert from "../components/commons/Alert";
 
 class AddEvent extends Component {
   static navigationOptions = {
     headerStyle: { elevation: 0 },
     headerTitle: "Create Event",
     headerTitleStyle: {
-      fontFamily: "ws",
+      fontFamily: "font",
       fontWeight: "normal",
       color: textDark
     }
   };
 
   state = {
-    animating: false,
-    isReady: false,
+    uploading: false,
+    isReady: true,
     formData: {},
-    categories: [],
-    ticketTypes: [],
-    formStructure: {}
+    categories: this.props.categories,
+    formStructure: {
+      cover: { type: "image", label: "Event Cover" },
+      name: { label: "Event Name", placeholder: "My awesome event" },
+      location: { label: "Event Location", placeholder: "My event location" },
+      description: { type: "textarea", label: "Event Description" },
+      category: {
+        type: "picker",
+        label: "Event Category",
+        data: this.props.categories
+      },
+      date: { type: "date", label: "Event Date & hour" },
+      price: {
+        label: "Event Price",
+        placeholder: "Any price"
+      }
+    }
   };
 
-  async componentDidMount() {
-    const callCam = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    await db.bindToState("categories", {
-      context: this,
-      state: "categories",
-      asArray: true,
-      then: data => {
-        db.bindToState("ticketTypes", {
-          context: this,
-          state: "ticketTypes",
-          asArray: true,
-          then: data => {
-            const { categories, ticketTypes } = this.state;
-            const formStructure = addEventFormStructure(
-              categories,
-              ticketTypes
-            );
-            this.setState({ isReady: true, formStructure }, () => {
-              Object.keys(this.state.formStructure).map(key => {
-                const formData = this.state.formData;
-                formData[key] = null;
-                this.setState(formData);
-              });
-            });
-          },
-          onFailure: err => {
-            console.log(err);
-          }
-        });
-      }
-    });
-  }
+  check = () => {
+    console.log(this.form.state);
+  };
 
   render() {
     const {} = styles;
-    const { animating, isReady } = this.state;
+    const { isReady, uploading } = this.state;
     return isReady ? (
       <Container>
-        <Content
-          contentContainerStyle={{ ...rnSetPadding(BASE_SPACE, "horizontal") }}
-        >
-          <Form>
-            {animating ? (
-              <Text style={{ padding: 10, textAlign: "center" }}>
-                Uploading...
-              </Text>
-            ) : (
-              this.generateForm()
-            )}
-          </Form>
-        </Content>
-        <Footer>
-          <FooterTab>
-            <Button
-              full
-              disabled={false}
-              style={{ backgroundColor: primaryColor }}
-              onPress={this.onFormSubmit}
+        {!uploading ? (
+          <React.Fragment>
+            <Content
+              contentContainerStyle={{
+                ...rnSetPadding(BASE_SPACE, "horizontal")
+              }}
             >
-              <Text style={{ fontFamily: "ws", color: bgColor }}>Create</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
+              <FormGenerator
+                ref={form => (this.form = form)}
+                structure={this.state.formStructure}
+              />
+            </Content>
+            <Footer>
+              <FooterTab>
+                <Button
+                  full
+                  disabled={false}
+                  style={{ backgroundColor: primaryColor }}
+                  onPress={this.onFormSubmit}
+                >
+                  <Text style={{ fontFamily: "font", color: bgColor }}>
+                    Create
+                  </Text>
+                </Button>
+              </FooterTab>
+            </Footer>
+          </React.Fragment>
+        ) : (
+          <LoadingScreen text="Uploading..." />
+        )}
       </Container>
     ) : (
       <LoadingScreen />
@@ -118,101 +107,85 @@ class AddEvent extends Component {
   }
 
   _uploadImg = async (uri, name) => {
+    console.log(uri);
     const response = await fetch(uri);
     const blob = await response.blob();
 
-    return await storage
-      .ref()
+    return await STORAGE.ref()
       .child(`images/covers/${name}`)
       .put(blob);
   };
 
   onFormSubmit = () => {
-    console.log("ici");
-    this.setState({ animating: true }, () => {
-      const formData = this.state.formData;
-      const name = "cover_" + new Date().valueOf();
-      const { cover, ...data } = formData;
-      const { uri, cancelled, type, ...restCover } = cover;
+    const { formData } = this.form.state;
+    console.log("FD", formData);
 
+    let errorMessage = Object.keys(formData)
+      .map(key => !formData[key] && `${key} is required!`)
+      .filter(formData => !!formData);
+
+    // this.setState({ errorMessage });
+
+    const name = "cover_" + new Date().valueOf();
+    const { cover, ...data } = formData;
+
+    const keys = Object.keys(formData);
+
+    if (errorMessage.length === 0) {
       if (cover) {
-        this._uploadImg(cover.uri, name)
-          .then(p => {
-            p.ref.getDownloadURL().then(uri => {
-              const newField = {
-                ...data,
-                date: moment(data.date).format("DD-MM-YYYY"),
-                createdAt: moment(new Date()).format("DD-MM-YYYY"),
-                img: { ...restCover, uri }
-              };
-              db.push("events", {
-                data: {
-                  ...newField
-                },
-                then: err => {
-                  console.log(err);
-                  this.setState({ animating: false });
-                }
-              });
-              console.log(...newField);
+        const { uri, cancelled, type, ...restCover } = cover;
+        this.setState({ uploading: true }, () => {
+          this._uploadImg(cover.uri, name)
+            .then(p =>
+              p.ref.getDownloadURL().then(uri => {
+                const newField = {
+                  ...data,
+                  date: moment(data.date).format("DD-MM-YYYY"),
+                  createdAt: moment(new Date()).format("DD-MM-YYYY"),
+                  img: { ...restCover, uri }
+                };
+                DB.push("events", {
+                  data: { ...newField },
+                  then: err => {
+                    console.log(err);
+                    this.form.resetFormData();
+                  }
+                });
+                console.log(...newField);
+              })
+            )
+            .catch(err => {
+              console.log(err);
+            })
+            .then(() => {
+              this.setState({ uploading: false, errorMessage: "" });
             });
-          })
-          .catch(err => {
-            console.log(err);
-            this.setState({ animating: false });
-          });
+        });
       }
-    });
-  };
-
-  onInputChange = (name, rest) => {
-    const { formData } = this.state;
-    formData[name] = rest[0];
-
-    this.setState({ formData });
-  };
-
-  generateForm = el => {
-    const struct = this.state.formStructure;
-    const keys = Object.keys(struct);
-
-    const data = keys.map(key => {
-      const el = struct[key];
-      const { type, placeholder, label, children, data, row } = el;
-      const _type = type || "text";
-      const _formField = (
-        <FormField
-          key={key}
-          {...{ [_type]: true }}
-          data={data}
-          placeholder={placeholder}
-          label={label}
-          name={key}
-          change={this.onInputChange}
-          value={this.state.formData[key]}
-        >
-          {/* {children && this.generateForm(children)} */}
-        </FormField>
-      );
-      const _output = row ? <Grid style={{ ...rnFill }} /> : _formField;
-
-      return _output;
-    });
-
-    return data;
+    } else {
+      Toast.show({
+        text: "Fill all the fields",
+        type: "warning",
+        buttonText: "Close"
+      });
+    }
   };
 }
 
-export default AddEvent;
+const mstp = ({ categories }) => ({
+  categories
+});
+
+export default connect(mstp)(AddEvent);
 
 const styles = StyleSheet.create({
   inputStyle: {
-    fontFamily: "ws",
+    fontFamily: "font",
     color: textColor,
     fontSize: 14
   },
   textAreaStyle: {
-    fontFamily: "ws",
+    fontFamily: "font",
     color: textColor,
     backgroundColor: bgLight,
     borderWidth: null,
@@ -220,52 +193,30 @@ const styles = StyleSheet.create({
     fontSize: 14
   },
   labelStyle: {
-    fontFamily: "ws",
+    fontFamily: "font",
     color: textDark,
     fontSize: 15,
     ...rnSetPadding(5, "vertical")
   },
   imageSytle: {
     elevation: null
+  },
+  text: {
+    fontFamily: "font",
+    color: textColor
+  },
+  alertContainer: {
+    padding: 5,
+    borderRadius: 3,
+    backgroundColor: ALERT_DANGER_COLOR,
+    borderColor: ALERT_DANGER_BORDER_COLOR,
+    borderWidth: 1,
+    borderStyle: "solid",
+    marginBottom: 10
+  },
+  alertMsg: {
+    fontFamily: "font",
+    color: ALERT_DANGER_BORDER_COLOR,
+    fontSize: 13
   }
 });
-
-{
-  /* <FormField label="Event Prices" container>
-  <Grid style={{ ...rnFill }}>
-    <Col>
-      <FormField
-        placeholder="Ticket Type"
-        picker
-        data={db.ticketType}
-      />
-    </Col>
-    <Col>
-      <FormField
-        placeholder="Ticket Price"
-        keyboardType="numeric"
-      />
-    </Col>
-    <Col style={{ width: 45 }}>
-      <Button
-        onPress={() => alert("clicked btn")}
-        style={{ marginTop: 10 }}
-        transparent
-        rounded
-        full
-      >
-        <Feather name="trash" size={16} color="#FF5555" />
-      </Button>
-    </Col>
-  </Grid>
-</FormField>
-  <Button
-    onPress={() => alert("clicked btn")}
-    style={{ marginBottom: BASE_SPACE }}
-    full
-    bordered
-  >
-    <Icon name="plus" type="Feather" fontSize={14} />
-    <Text>Add Price</Text>
-  </Button> */
-}
